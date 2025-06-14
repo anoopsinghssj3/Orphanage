@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* navbar */
+.navbar .dropdown {
+  display: flex !important;
+  align-items: center !important;
+  height: 6vh !important;
+  max-width: fit-content;
+  /* margin-top: 0.rem !important; */
+}
+
+/* donation-title */
+.donation-template .title-name {
+  text-decoration: underline;
+  text-decoration-color: yellow !important;
+}
+
+.expand-form{
+  overflow-x: hidden;
+}
+
+.expand-form .special {
+  transform: rotate(-90deg);
+  border-bottom-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+
+}
+
+.expand-form .special-2 {
+  border-bottom-right-radius: 1rem;
+  border-top-left-radius: 1rem;
+
+}
