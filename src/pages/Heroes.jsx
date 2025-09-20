@@ -1,5 +1,4 @@
 import React from 'react';
-import cowHeroes from "../../public/images/cow.avif"
 
 function Heroes() {
   return (
@@ -7,7 +6,7 @@ function Heroes() {
       <div className="carousel-inner rounded-3 overflow-hidden shadow">
         <div className="carousel-item active">
           <img
-            src={cowHeroes}
+            src="/images/cow.avif"
             alt="cow"
             className='w-100'
           />
