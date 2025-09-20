@@ -1,105 +1,159 @@
-import React, { useState } from 'react';
+// DonationForm_1.jsx
+import React, { useState } from "react";
 import * as Fa6Icons from "react-icons/fa6";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 function DonationForm_1() {
-  const [amount, setAmount] = useState("");
-  const [food, setFood] = useState("");
-  const navigate = useNavigate();
+  const [amount, setAmount] = useState(""); // donation amount
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorNumber, setDonorNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAmountClick = (amt) => {
-    setAmount(amt);
+    setAmount(Number(amt));
   };
 
-  const handleFoodClick = (category) => {
-    setFood(category);
-  };
-
-  const handleDonate = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    axios.post("http://localhost:5000/donate", payload)
-      .then(() => navigate("/donateInfo"))
-      .catch((err) => console.error("Donation error:", err));
+    if (!amount) {
+      alert("Please select or enter an amount.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const donationData = {
+        donorName,
+        donorEmail,
+        donorNumber,
+        amount,
+      };
+
+      console.log("Submitting donation:", donationData);
+
+      // Example API call
+      // await axios.post("/api/donate", donationData);
+
+      alert(`Thank you ${donorName}, for donating ₹${amount}!`);
+
+      // Reset fields after submit
+      setAmount("");
+      setDonorName("");
+      setDonorEmail("");
+      setDonorNumber("");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="DonationForm_1 mt-2 border-dark d-flex flex-column p-1 rounded-3 bg-light fw-bold me-2"
-      style={{ width: "26rem", height: "fit-content" }}>
-
-      <h5 className="d-flex justify-content-center align-items-end">
-        <Fa6Icons.FaLock color="green" className='me-2' />
+    <div className="DonationForm_1 container bg-light p-4 rounded-2 shadow-lg">
+      <h5 className="text-center text-success mb-4 d-flex justify-content-center align-items-center gap-2">
+        <Fa6Icons.FaLock />
         Secure Donation
       </h5>
 
-      <form onSubmit={handleDonate}>
-        {/* plan buttons */}
-        <div className="d-flex flex-row justify-content-center px-3 mb-3">
-          <button className="btn btn-primary w-50 me-2" type="button">Give Once</button>
-          <button className="btn btn-success w-50 ms-2" type="button">Monthly</button>
+      <form onSubmit={handleSubmit}>
+        {/* Amount Selection */}
+        <div className="d-flex gap-2 mb-4">
+          <button className="btn btn-primary w-100" type="button">
+            Give Once
+          </button>
         </div>
 
-        {/* ₹ buttons */}
-        <div className="container px-1 pt-2 mb-2">
-          <div className="row">
-            {[1000, 500, 200, 100, 50, 10].map((amt) => (
-              <div className="col-md-4 mb-3" key={amt}>
-                <button
-                  type="button"
-                  className="btn border border-2 rounded-3 w-100"
-                  onClick={() => handleAmountClick(amt)}
-                >
-                  ₹ {amt}
-                </button>
-              </div>
-            ))}
-          </div>
+        <div className="row g-3 mb-4 text-primary">
+          {[1000, 500, 200, 100, 50, 10].map((amt) => (
+            <div className="col-6 col-md-4" key={amt}>
+              <button
+                type="button"
+                className={`btn fw-semibold border w-100 rounded-3 ${
+                  amount === Number(amt)
+                    ? "btn-primary text-white"
+                    : "btn-outline-primary"
+                }`}
+                onClick={() => handleAmountClick(amt)}
+              >
+                ₹ {amt}
+              </button>
+            </div>
+          ))}
         </div>
 
-        {/* Custom amount input */}
-        <div className="w-100 p-3 d-flex flex-column justify-content-between align-items-center" style={{ height: "17vh" }}>
+        <div className="mb-4">
           <input
-            className="btn border border-2 rounded-3 w-100 text-primary fw-semibold fs-4"
-            type="number"
-            min={1}
-            placeholder="₹ Enter Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </div>
-
-        {/* Food category buttons */}
-        <div className="container px-1 mb-2">
-          <div className="row">
-            {["Handicap", "Girls", "Foods", "Animals", "Cloths", "Education"].map((cat) => (
-              <div className="col-md-4 mb-3" key={cat}>
-                <button
-                  type="button"
-                  className="btn border border-2 rounded-3 w-100"
-                  onClick={() => handleFoodClick(cat)}
-                >
-                  {cat}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Category input */}
-        <div className="w-100 p-3 d-flex flex-column justify-content-between align-items-center" style={{ height: "17vh" }}>
-          <input
-            className="btn border border-2 rounded-3 w-100 text-primary fw-semibold fs-4"
+            className="form-control form-control-lg fw-semibold text-primary text-center"
             type="text"
-            placeholder="Specially Donating For"
-            value={food}
-            onChange={(e) => setFood(e.target.value)}
+            placeholder="₹ Enter Amount"
+            value={amount === "" ? "" : `₹ ${amount}`}
+            onChange={(e) => {
+              const clean = e.target.value.replace(/[^\d]/g, "");
+              setAmount(clean === "" ? "" : Number(clean));
+            }}
           />
         </div>
 
-        <button className="btn btn-primary w-100 btn-donate mt-3" type="submit">
-          Donate
-        </button>
+        {/* Donor Info Section */}
+        <div className="mb-2">
+          <label htmlFor="name" className="form-label">
+            Donor Name:
+          </label>
+          <input
+            type="text"
+            id="name"
+            className="form-control"
+            placeholder="Donor Name"
+            value={donorName}
+            onChange={(e) => setDonorName(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-2">
+          <label htmlFor="email" className="form-label">
+            Donor Email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            className="form-control"
+            placeholder="Donor Email"
+            value={donorEmail}
+            onChange={(e) => setDonorEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="number" className="form-label">
+            Donor Number:
+          </label>
+          <input
+            type="tel"
+            id="number"
+            className="form-control"
+            placeholder="Donor Number"
+            value={donorNumber}
+            onChange={(e) => setDonorNumber(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="d-flex justify-content-center" style={{ marginTop: "2rem" }}>
+          <button
+            className="btn btn-success w-75 fw-bold py-2 fs-5"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Donate"}
+          </button>
+        </div>
       </form>
     </div>
   );

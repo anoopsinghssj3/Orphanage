@@ -1,14 +1,17 @@
-import React from 'react'
-import * as Fa6Icons from "react-icons/fa6";
+import React from 'react';
+import { FaCow } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+// import "./Navbar.css"
 
 function Navbar() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">
-                    <Fa6Icons.FaBuildingNgo  /> Hope NGO
-                </a>
+                <Link className="navbar-brand d-flex align-items-center gap-3" to="/">
+                 <FaCow fontSize="3rem"/>
+                  Pasupatinath Foundation
+                </Link>
+
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -22,53 +25,48 @@ function Navbar() {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item mt-1">
-                            <a className="nav-link active " aria-current="page" href="/">Home</a>
+                    {/* Left Navigation */}
+                    <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+                        <li className="nav-item home-navitem">
+                            <Link className="nav-link active" to="/">Home</Link>
                         </li>
-                        <li className="nav-item mt-1">
-                            <a className="nav-link" href="/about">About</a>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/expense" className="btn btn-warning m-1">Expense</Link>
+                        <li className="nav-item about-navitem">
+                            <Link className="nav-link" to="/about">About</Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/reports" className="btn btn-info m-1">Reports</Link>
+                            <Link to="/expense" className="btn btn-warning me-2 mt-1">Expense</Link>
                         </li>
-                        <li className="nav-item dropdown ms-1">
-                            <a
+                        <li className="nav-item">
+                            <Link to="/reports" className="btn btn-info me-2 mt-1">Reports</Link>
+                        </li>
+
+                        {/* Dropdown */}
+                        <li className="nav-item dropdown mt-1">
+                            <button
                                 className="btn btn-primary dropdown-toggle"
-                                href="#"
-                                role="button"
+                                type="button"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
-                                Dropdown
-                            </a>
+                                Know More...
+                            </button>
                             <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Our Work</a></li>
-                                <li><a className="dropdown-item" href="#">Our Impact</a></li>
+                                <li><Link className="dropdown-item" to="/our-work">Our Work</Link></li>
+                                <li><Link className="dropdown-item" to="/our-impact">Our Impact</Link></li>
                                 <li><hr className="dropdown-divider" /></li>
-                                <li><a className="dropdown-item" href="#">Blog</a></li>
+                                <li><Link className="dropdown-item" to="/blog">Blog</Link></li>
                             </ul>
                         </li>
                     </ul>
 
-                    <ul className="navbar-nav d-flex align-items-center py-0">
-                        <li className="nav-item">
-                            <Link to="/login" className="btn btn-primary m-1">Login</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/signup" className="btn btn-danger m-1">Sign Up</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/donate" className="btn btn-success m-1">Donate</Link>
-                        </li>
-                    </ul>
+                    {/* Right Button */}
+                    <div className="d-flex">
+                        <Link to="/donate" className="btn btn-success">Donate</Link>
+                    </div>
                 </div>
             </div>
         </nav>
-    )
+    );
 }
 
 export default Navbar;

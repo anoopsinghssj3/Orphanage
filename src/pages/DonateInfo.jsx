@@ -1,82 +1,132 @@
-import React, { useState } from "react";
-import axios from "axios"
-import "react-router-dom"
+// DonateInfo.jsx
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function DonateInfo() {
-    const [donorName, setDonorName] = useState("");
-    const [donorEmail, setDonorEmail] = useState("");
-    const [donorNumber, setDonorNumber] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+  // Try router state first, fallback to sessionStorage
+  const initialAmount =
+    location.state?.amount ??
+    (sessionStorage.getItem("donationAmount") ? Number(sessionStorage.getItem("donationAmount")) : "");
 
-        axios.post("http://localhost:5000/donate",
-            { donorName, donorEmail, donorNumber },
-        );
+  const [amount, setAmount] = useState(initialAmount);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorNumber, setDonorNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-        console.log({
-            donorName,
-            donorEmail,
-            donorNumber,
-        });
-    };
+  // If no amount available, send user back to the amount page
+  useEffect(() => {
+    if (!amount && amount !== 0) {
+      // Replace "/donate" with your amount-selection route if it's different
+      navigate("/donate", { replace: true });
+    }
+  }, [amount, navigate]);
 
-    return (
-        <>
-            <div className="donation-form_2 d-flex flex-column justify-content-start align-items-center p-2  bg-danger fw-bold pt-3  vh-100">
-                <div>
-                    <h2 className="text-light">Donar Info</h2>
-                </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!amount) {
+      alert("Donation amount missing. Please go back and select an amount.");
+      return;
+    }
 
-                <div>
-                    <form onSubmit={handleSubmit} className="card d-flex flex-column p-4 rounded-3  fw-bold" style={{ width: "26rem", height: "fit-content" }}>
-                        <label htmlFor="name">Donor Name:</label>
-                        <input
-                            placeholder="Donar Name"
-                            className="mb-4 form-control"
-                            type="text"
-                            id="name"
-                            value={donorName}
-                            onChange={(e) => setDonorName(e.target.value)}
-                        />
+    try {
+      setLoading(true);
+      setError("");
 
-                        <label htmlFor="email">Donor Email:</label>
-                        <input
-                            placeholder="Donar Email"
-                            className="mb-4 form-control"
-                            type="email"
-                            id="email"
-                            value={donorEmail}
-                            onChange={(e) => setDonorEmail(e.target.value)}
-                        />
+      const payload = {
+        donorName,
+        donorEmail,
+        donorNumber,
+        amount, // include amount here
+      };
 
-                        <label htmlFor="number">Donor Number:</label>
-                        <input
-                            placeholder="Donar Number"
-                            className="mb-4 form-control"
-                            type="number"
-                            id="number"
-                            value={donorNumber}
-                            onChange={(e) => setDonorNumber(e.target.value)}
-                        />
+      // Example POST to backend — adjust URL as needed
+      const res = await axios.post("/api/donate", payload);
 
-                        {/* <label htmlFor="amount">Donor Amount:</label>
-                    <input
-                        className="mb-4"
-                        type="number"
-                        id="amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                    /> */}
-                        <div className="d-flex justify-content-center">
-                            <button type="submit" className="btn btn-success w-50"                        >
-                                Donate
-                            </button></div>
-                    </form>
-                </div>
-            </div>
-        </>
-    )
+      // Clear stored amount (if you want)
+      sessionStorage.removeItem("donationAmount");
+
+      // Redirect to a success page, or show a message
+      navigate("/donation-success", { state: { amount, serverResponse: res.data } });
+    } catch (err) {
+      console.error(err);
+      setError("Failed to submit donation. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container-fluid bg-danger min-vh-100 d-flex flex-column justify-content-start align-items-center py-5">
+      <h2 className="text-light mb-4">Donor Info</h2>
+
+      <form
+        onSubmit={handleSubmit}
+        className="card shadow p-4 rounded-4 text-dark fw-semibold"
+        style={{ width: "26rem" }}
+      >
+        {/* Show donation amount (readonly) */}
+        <div className="alert alert-info text-center fw-bold fs-5">
+          Donation Amount: ₹ {amount}
+        </div>
+
+        {/* Hidden amount (so it is included if needed in a native form submit) */}
+        <input type="hidden" name="amount" value={amount} />
+
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">Donor Name:</label>
+          <input
+            type="text"
+            id="name"
+            className="form-control"
+            placeholder="Donor Name"
+            value={donorName}
+            onChange={(e) => setDonorName(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Donor Email:</label>
+          <input
+            type="email"
+            id="email"
+            className="form-control"
+            placeholder="Donor Email"
+            value={donorEmail}
+            onChange={(e) => setDonorEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="number" className="form-label">Donor Number:</label>
+          <input
+            type="tel"
+            id="number"
+            className="form-control"
+            placeholder="Donor Number"
+            value={donorNumber}
+            onChange={(e) => setDonorNumber(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && <div className="alert alert-danger">{error}</div>}
+
+        <div className="d-flex justify-content-center">
+          <button type="submit" className="btn btn-success w-50" disabled={loading}>
+            {loading ? "Processing..." : "Donate"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
-export default DonateInfo
+export default DonateInfo;

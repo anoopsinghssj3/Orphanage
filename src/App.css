@@ -3,6 +3,10 @@
   padding: 0;
   box-sizing: border-box;
 }
+body{
+  background-color: #dc3545 !important;
+  color: white !important;
+}
 
 /* navbar */
 .navbar .dropdown {
@@ -19,7 +23,7 @@
   text-decoration-color: yellow !important;
 }
 
-.expand-form{
+.expand-form {
   overflow-x: hidden;
 }
 

@@ -79,7 +79,7 @@
 
 // export default ExpandForm
 import React from 'react';
-import ExpandData from "../pages/ExpandData";
+import ExpandData from "../pages/ExpandData.js";
 import { Link } from 'react-router-dom';
 
 function ExpandForm() {
